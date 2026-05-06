@@ -6,10 +6,10 @@ const releaseOwner = 'souvenp'
 const releaseRepo = 'lx-netease-music-desktop'
 
 const address = [
-  [`https://raw.githubusercontent.com/${releaseOwner}/${releaseRepo}/master/publish/version.json`, 'direct'],
-  [`https://cdn.jsdelivr.net/gh/${releaseOwner}/${releaseRepo}/publish/version.json`, 'direct'],
-  [`https://fastly.jsdelivr.net/gh/${releaseOwner}/${releaseRepo}/publish/version.json`, 'direct'],
-  [`https://gcore.jsdelivr.net/gh/${releaseOwner}/${releaseRepo}/publish/version.json`, 'direct'],
+  [`https://raw.githubusercontent.com/${releaseOwner}/${releaseRepo}/main/publish/version.json`, 'direct'],
+  [`https://cdn.jsdelivr.net/gh/${releaseOwner}/${releaseRepo}@main/publish/version.json`, 'direct'],
+  [`https://fastly.jsdelivr.net/gh/${releaseOwner}/${releaseRepo}@main/publish/version.json`, 'direct'],
+  [`https://gcore.jsdelivr.net/gh/${releaseOwner}/${releaseRepo}@main/publish/version.json`, 'direct'],
 ]
 
 const request = async(url, retryNum = 0) => {
