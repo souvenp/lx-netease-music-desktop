@@ -139,7 +139,7 @@ export const mergeSetting = (originSetting: LX.AppSetting, targetSetting?: Parti
   }
 }
 
-const applyInitSetting = (setting: LX.AppSetting) => {
+const applyInitSetting = (setting: Partial<LX.AppSetting>) => {
   if (global.envParams.cmdParams.hidden && !setting['tray.enable']) {
     setting['tray.enable'] = true
   }
@@ -154,8 +154,8 @@ export const updateSetting = (setting?: Partial<LX.AppSetting>, isInit: boolean 
 
   let originSetting: LX.AppSetting
   if (isInit) {
-    setting &&= migrateSetting(setting)
-    applyInitSetting(setting as LX.AppSetting)
+    setting = setting ? migrateSetting(setting) : {}
+    applyInitSetting(setting)
     originSetting = { ...defaultSetting }
   } else originSetting = global.lx.appSetting
 
