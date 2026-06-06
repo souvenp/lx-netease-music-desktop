@@ -85,6 +85,7 @@ export const createDownloadInfo = (musicInfo: LX.Music.MusicInfoOnline, type: LX
     progress: 0,
     speed: '',
     writeQueue: 0,
+    createdAt: Date.now(),
     metadata: {
       musicInfo,
       url: null,

@@ -3,6 +3,7 @@ import { getAnalyser, getCurrentTime as getPlayerCurrentTime } from '@renderer/p
 import { lyric, setLines, setOffset, setTempOffset, setText } from '@renderer/store/player/lyric'
 import { isPlay, musicInfo } from '@renderer/store/player/state'
 import { setStatusText } from '@renderer/store/player/action'
+import { volume } from '@renderer/store/player/volume'
 import { markRawList } from '@common/utils/vueTools'
 import { appSetting } from '@renderer/store/setting'
 import { onNewDesktopLyricProcess } from '@renderer/utils/ipc'
@@ -44,6 +45,15 @@ export const sendDesktopLyricInfo = (info: LX.DesktopLyric.LyricActions, transfe
   else desktopLyricPort.postMessage(info)
 }
 const handleDesktopLyricMessage = (action: LX.DesktopLyric.WinMainActions) => {
+  if (typeof action !== 'string') {
+    switch (action.action) {
+      case 'set_volume_delta':
+        window.app_event.setVolume(Math.round((volume.value + action.data) * 100) / 100)
+        break
+    }
+    return
+  }
+
   switch (action) {
     case 'get_info':
       sendDesktopLyricInfo({

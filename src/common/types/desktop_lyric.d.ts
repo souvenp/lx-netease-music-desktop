@@ -40,6 +40,7 @@ declare namespace LX {
     }
 
     type WinMainActions = 'get_info' | 'get_status' | 'get_analyser_data_array'
+    | LyricAction<'set_volume_delta', number>
 
     interface LyricActionBase <A> {
       action: A

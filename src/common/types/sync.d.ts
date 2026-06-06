@@ -38,6 +38,12 @@ declare namespace LX {
     | SyncAction<'generate_code'>
     | SyncAction<'enable_server', EnableServer>
     | SyncAction<'enable_client', EnableClient>
+    | SyncAction<'webdav_test_connection'>
+    | SyncAction<'webdav_sync_lists'>
+    | SyncAction<'webdav_upload_lists'>
+    | SyncAction<'webdav_download_lists'>
+    | SyncAction<'webdav_upload_settings_apis'>
+    | SyncAction<'webdav_download_settings_apis'>
 
     type ServerDevices = ServerKeyInfo[]
 

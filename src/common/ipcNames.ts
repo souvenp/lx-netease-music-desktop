@@ -155,6 +155,7 @@ const modules = {
     download_list_update: 'download_list_update',
     download_list_remove: 'download_list_remove',
     download_list_clear: 'download_list_clear',
+    download_list_overwrite: 'download_list_overwrite',
   },
   winLyric: {
     close: 'close',

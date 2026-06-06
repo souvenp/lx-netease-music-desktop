@@ -1,5 +1,5 @@
 <template>
-  <div id="container" :class="[{ lock: setting['desktopLyric.isLock'] }, { hide: isHide || isHoverHide }]">
+  <div id="container" :class="[{ lock: setting['desktopLyric.isLock'] }, { hide: isHide || isHoverHide }]" @wheel.capture.stop.prevent="handleWheelVolume">
     <div id="main">
       <transition enter-active-class="animated-fast fadeIn" leave-active-class="animated-fast fadeOut">
         <div v-show="!setting['desktopLyric.isLock']" class="control-bar">
@@ -29,22 +29,27 @@
 <script setup>
 import useWindowSize from '@lyric/useApp/useWindowSize'
 import useHoverHide from '@lyric/useApp/useHoverHide'
-import { onMounted } from '@common/utils/vueTools'
+import { computed, onMounted } from '@common/utils/vueTools'
 import { setting } from '@lyric/store/state'
 import { sendConnectMainWindowEvent } from '@lyric/utils/ipc'
+import { setVolumeDelta } from '@lyric/core/mainWindowChannel'
 import useCommon from '@lyric/useApp/useCommon'
 import useLyric from '@lyric/useApp/useLyric'
 import useTheme from '@lyric/useApp/useTheme'
 import { init as initLyricPlayer } from '@lyric/core/lyric'
 import usePauseHide from '@lyric/useApp/usePauseHide'
 
-const isShowResize = window.os != 'windows'
+const isShowResize = computed(() => window.os != 'windows' && !setting['desktopLyric.isLock'])
 useCommon()
 const { handleMouseDown, handleTouchDown } = useWindowSize()
 const isHoverHide = useHoverHide()
 useLyric()
 useTheme()
 const isHide = usePauseHide()
+
+const handleWheelVolume = event => {
+  setVolumeDelta(-event.deltaY / 10000)
+}
 
 
 onMounted(() => {

@@ -15,6 +15,7 @@ import usePlayer from './usePlayer'
 import useSettingSync from './useSettingSync'
 import { useRouter } from '@common/utils/vueRouter'
 import handleListAutoUpdate from './listAutoUpdate'
+import { registerDownloadListOverwrite } from '@renderer/store/download/action'
 
 
 export default () => {
@@ -38,6 +39,7 @@ export default () => {
 
   useUpdate()
   useSettingSync()
+  registerDownloadListOverwrite()
 
   void getEnvParams().then(envParams => {
     // 移除代理相关的环境变量设置，防止请求库自动应用它们

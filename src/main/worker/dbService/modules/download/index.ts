@@ -5,6 +5,7 @@ import {
   updateDownloadList,
   deleteDownloadList,
   clearDownloadList,
+  overwriteDownloadList,
 } from './dbHelper'
 
 let list: LX.Download.ListItem[]
@@ -25,6 +26,8 @@ const toDBDownloadInfo = (musicInfos: LX.Download.ListItem[], offset: number = 0
       filePath: info.metadata.filePath,
       musicInfo: JSON.stringify(info.metadata.musicInfo),
       position: offset + index,
+      createdAt: info.createdAt ?? Date.now() - index,
+      isRemoteSynced: info.isRemoteSynced ? 1 : 0,
     }
   })
 }
@@ -42,6 +45,8 @@ const initDownloadList = () => {
       progress: item.progress_total ? parseInt((item.progress_downloaded / item.progress_total).toFixed(2)) * 100 : 0,
       speed: '',
       writeQueue: 0,
+      createdAt: item.createdAt,
+      isRemoteSynced: item.isRemoteSynced == 1,
       metadata: {
         musicInfo,
         url: item.url,
@@ -115,5 +120,11 @@ export const downloadInfoRemove = (ids: string[]) => {
  */
 export const downloadInfoClear = () => {
   clearDownloadList()
+  list = []
+}
+
+export const downloadInfoOverwrite = (downloadInfos: LX.Download.ListItem[]) => {
+  overwriteDownloadList(toDBDownloadInfo(downloadInfos))
+  list = downloadInfos
 }
 

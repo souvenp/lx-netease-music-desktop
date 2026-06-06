@@ -1,5 +1,7 @@
 import { ipcRenderer } from 'electron'
 
+const rendererListenerMap = new Map<(...args: any[]) => any, Map<string, (...args: any[]) => any>>()
+
 export function rendererSend(name: string): void
 export function rendererSend<T>(name: string, params: T): void
 export function rendererSend<T>(name: string, params?: T): void {
@@ -23,9 +25,16 @@ export async function rendererInvoke <T, V>(name: string, params?: T): Promise<V
 export function rendererOn(name: string, listener: LX.IpcRendererEventListener): void
 export function rendererOn<T>(name: string, listener: LX.IpcRendererEventListenerParams<T>): void
 export function rendererOn<T>(name: string, listener: LX.IpcRendererEventListenerParams<T>): void {
-  ipcRenderer.on(name, (event, params) => {
+  const wrappedListener = (event: Electron.IpcRendererEvent, params: T) => {
     listener({ event, params })
-  })
+  }
+  let listenerMap = rendererListenerMap.get(listener)
+  if (!listenerMap) {
+    listenerMap = new Map()
+    rendererListenerMap.set(listener, listenerMap)
+  }
+  listenerMap.set(name, wrappedListener)
+  ipcRenderer.on(name, wrappedListener)
 }
 
 export function rendererOnce(name: string, listener: LX.IpcRendererEventListener): void
@@ -37,7 +46,11 @@ export function rendererOnce<T>(name: string, listener: LX.IpcRendererEventListe
 }
 
 export const rendererOff = (name: string, listener: (...args: any[]) => any) => {
-  ipcRenderer.removeListener(name, listener)
+  const listenerMap = rendererListenerMap.get(listener)
+  const wrappedListener = listenerMap?.get(name) ?? listener
+  ipcRenderer.removeListener(name, wrappedListener)
+  listenerMap?.delete(name)
+  if (listenerMap?.size == 0) rendererListenerMap.delete(listener)
 }
 
 export const rendererOffAll = (name: string) => {

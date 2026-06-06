@@ -41,16 +41,16 @@
             <div class="list-item-cell auto name">
               <span class="select name" :aria-label="getName(item)">{{ getName(item) }}</span>
             </div>
-            <div class="list-item-cell" style="flex: 0 0 20%;">{{ item.progress }}%<span v-if="item.status == downloadStatus.RUN && item.speed"> - {{ item.speed }}/s</span></div>
-            <div class="list-item-cell" style="flex: 0 0 22%;" :aria-label="item.statusText">{{ item.statusText }}</div>
+            <div class="list-item-cell" style="flex: 0 0 20%;">{{ getProgressText(item) }}<span v-if="!item.isRemoteSynced && item.status == downloadStatus.RUN && item.speed"> - {{ item.speed }}/s</span></div>
+            <div class="list-item-cell" style="flex: 0 0 22%;" :aria-label="getStatusText(item)">{{ getStatusText(item) }}</div>
             <div class="list-item-cell" style="flex: 0 0 10%;">{{ getTypeName(item.metadata.quality) }}</div>
             <div class="list-item-cell" style="flex: 0 0 13%; padding-left: 0; padding-right: 0;">
               <material-list-buttons
-                :index="index" :download-btn="false" :file-btn="item.status != downloadStatus.ERROR" remove-btn="remove-btn"
-                :start-btn="!item.isComplate && item.status != downloadStatus.WAITING && (item.status != downloadStatus.RUN)"
-                :pause-btn="!item.isComplate && (item.status == downloadStatus.RUN || item.status == downloadStatus.WAITING)"
-                :list-add-btn="false" :play-btn="item.status == downloadStatus.COMPLETED"
-                :search-btn="item.status == downloadStatus.ERROR" @btn-click="handleListBtnClick"
+                :index="index" :download-btn="false" :file-btn="!item.isRemoteSynced && item.status != downloadStatus.ERROR" remove-btn="remove-btn"
+                :start-btn="!item.isRemoteSynced && !item.isComplate && item.status != downloadStatus.WAITING && (item.status != downloadStatus.RUN)"
+                :pause-btn="!item.isRemoteSynced && !item.isComplate && (item.status == downloadStatus.RUN || item.status == downloadStatus.WAITING)"
+                :list-add-btn="false" :play-btn="!item.isRemoteSynced && item.status == downloadStatus.COMPLETED"
+                :search-btn="!item.isRemoteSynced && item.status == downloadStatus.ERROR" @btn-click="handleListBtnClick"
               />
             </div>
           </div>
@@ -154,6 +154,7 @@ export default {
         return
       }
       const task = list.value[index]
+      if (task.isRemoteSynced) return
       if (task.isComplate) {
         handlePlayMusic(list.value.indexOf(task), true)
       } else if (task.status === downloadStatus.RUN || task.status === downloadStatus.WAITING) {
@@ -209,6 +210,12 @@ export default {
     const getTypeName = (quality) => {
       return quality == 'flac24bit' ? 'FLAC Hires' : quality?.toUpperCase()
     }
+    const getStatusText = (downloadInfo) => {
+      return downloadInfo.isRemoteSynced ? window.i18n.t('download___status_remote_synced') : downloadInfo.statusText
+    }
+    const getProgressText = (downloadInfo) => {
+      return downloadInfo.isRemoteSynced ? '-' : `${downloadInfo.progress}%`
+    }
     return {
       listRef,
       list,
@@ -238,6 +245,8 @@ export default {
 
       getName,
       getTypeName,
+      getStatusText,
+      getProgressText,
     }
   },
 }

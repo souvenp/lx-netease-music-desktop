@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { BrowserWindow } from 'electron'
-import { debounce, getPlatform, isLinux, isWin } from '@common/utils'
+import { debounce, getPlatform, isWin } from '@common/utils'
 import { initWindowSize, minHeight, minWidth } from './utils'
 import { mainSend } from '@common/mainIpc'
 import { encodePath } from '@common/utils/electron'
@@ -74,9 +74,6 @@ const winEvent = () => {
 
   browserWindow.once('ready-to-show', () => {
     showWindow()
-    if (global.lx.appSetting['desktopLyric.isLock']) {
-      browserWindow!.setIgnoreMouseEvents(true, { forward: !isLinux && global.lx.appSetting['desktopLyric.isHoverHide'] })
-    }
     // linux下每次重开时貌似要重新设置置顶
     // if (isLinux && global.lx.appSetting['desktopLyric.isAlwaysOnTop']) {
     //   browserWindow!.setAlwaysOnTop(global.lx.appSetting['desktopLyric.isAlwaysOnTop'], 'screen-saver')
@@ -123,7 +120,7 @@ export const createWindow = () => {
     hasShadow: false,
     // enableRemoteModule: false,
     // icon: join(global.__static, isWin ? 'icons/256x256.ico' : 'icons/512x512.png'),
-    resizable: isWin,
+    resizable: isWin && !global.lx.appSetting['desktopLyric.isLock'],
     minimizable: false,
     maximizable: false,
     fullscreenable: false,

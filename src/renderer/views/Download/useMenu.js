@@ -81,8 +81,18 @@ export default ({
 
   const showMenu = (event, taskInfo) => {
     itemMenuControl.sourceDetail = !!musicSdk[taskInfo.metadata.musicInfo.source]?.getMusicDetailPageUrl
+    itemMenuControl.search =
+      itemMenuControl.remove =
+      itemMenuControl.addTo = true
 
-    if (taskInfo.isComplate) {
+    if (taskInfo.isRemoteSynced) {
+      itemMenuControl.play =
+        itemMenuControl.start =
+        itemMenuControl.pause =
+        itemMenuControl.playLater =
+        itemMenuControl.file =
+        itemMenuControl.search = false
+    } else if (taskInfo.isComplate) {
       itemMenuControl.play =
         itemMenuControl.playLater =
         itemMenuControl.file = true

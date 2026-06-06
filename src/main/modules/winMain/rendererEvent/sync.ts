@@ -11,12 +11,23 @@ import {
   getServerDevices,
   removeServerDevice,
 } from '@main/modules/sync'
+import {
+  manualDownloadLists,
+  manualDownloadSettingsAndApis,
+  manualUploadLists,
+  manualUploadSettingsAndApis,
+  registerWebDAVSync,
+  testConnection,
+  triggerWebDAVSync,
+} from '@main/modules/sync/webdavSync'
 import { sendEvent } from '../main'
 
 
 let selectModeListenr: ((mode: LX.Sync.ModeTypes[keyof LX.Sync.ModeTypes] | null) => void) | null = null
 
 export default () => {
+  registerWebDAVSync()
+
   mainHandle<LX.Sync.SyncServiceActions, any>(WIN_MAIN_RENDERER_EVENT_NAME.sync_action, async({ params: data }) => {
     switch (data.action) {
       case 'enable_server':
@@ -28,6 +39,12 @@ export default () => {
       case 'get_server_status': return getServerStatus()
       case 'get_client_status': return getClientStatus()
       case 'generate_code': return generateCode()
+      case 'webdav_test_connection': return testConnection()
+      case 'webdav_sync_lists': return triggerWebDAVSync(true)
+      case 'webdav_upload_lists': return manualUploadLists()
+      case 'webdav_download_lists': return manualDownloadLists()
+      case 'webdav_upload_settings_apis': return manualUploadSettingsAndApis()
+      case 'webdav_download_settings_apis': return manualDownloadSettingsAndApis()
       case 'select_mode':
         if (selectModeListenr) {
           selectModeListenr(data.data.mode)

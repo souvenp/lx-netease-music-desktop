@@ -7,7 +7,7 @@ import { getDB } from '../../db'
 export const createQueryStatement = () => {
   const db = getDB()
   return db.prepare<[]>(`
-    SELECT "id", "isComplate", "status", "statusText", "progress_downloaded", "progress_total", "url", "quality", "ext", "fileName", "filePath", "musicInfo", "position"
+    SELECT "id", "isComplate", "status", "statusText", "progress_downloaded", "progress_total", "url", "quality", "ext", "fileName", "filePath", "musicInfo", "position", "createdAt", "isRemoteSynced"
     FROM download_list
     ORDER BY "position" ASC
   `)
@@ -20,8 +20,8 @@ export const createQueryStatement = () => {
 export const createInsertStatement = () => {
   const db = getDB()
   return db.prepare<[LX.DBService.DownloadMusicInfo]>(`
-    INSERT INTO "main"."download_list" ("id", "isComplate", "status", "statusText", "progress_downloaded", "progress_total", "url", "quality", "ext", "fileName", "filePath", "musicInfo", "position")
-    VALUES (@id, @isComplate, @status, @statusText, @progress_downloaded, @progress_total, @url, @quality, @ext, @fileName, @filePath, @musicInfo, @position)`)
+    INSERT INTO "main"."download_list" ("id", "isComplate", "status", "statusText", "progress_downloaded", "progress_total", "url", "quality", "ext", "fileName", "filePath", "musicInfo", "position", "createdAt", "isRemoteSynced")
+    VALUES (@id, @isComplate, @status, @statusText, @progress_downloaded, @progress_total, @url, @quality, @ext, @fileName, @filePath, @musicInfo, @position, @createdAt, @isRemoteSynced)`)
 }
 
 /**
@@ -55,7 +55,7 @@ export const createUpdateStatement = () => {
   const db = getDB()
   return db.prepare<[LX.DBService.DownloadMusicInfo]>(`
     UPDATE "main"."download_list"
-    SET "isComplate"=@isComplate, "status"=@status, "statusText"=@statusText, "progress_downloaded"=@progress_downloaded, "progress_total"=@progress_total, "url"=@url, "filePath"=@filePath
+    SET "isComplate"=@isComplate, "status"=@status, "statusText"=@statusText, "progress_downloaded"=@progress_downloaded, "progress_total"=@progress_total, "url"=@url, "filePath"=@filePath, "createdAt"=@createdAt, "isRemoteSynced"=@isRemoteSynced
     WHERE "id"=@id`)
 }
 

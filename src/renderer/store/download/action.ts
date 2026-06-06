@@ -4,6 +4,7 @@ import {
   downloadTasksCreate,
   downloadTasksRemove,
   downloadTasksUpdate,
+  onDownloadListOverwrite,
 } from '@renderer/utils/ipc'
 import {
   downloadList,
@@ -119,27 +120,47 @@ const cloneMusicInfoForDownload = (musicInfo: LX.Music.MusicInfoOnline, depth = 
   return clonedMusicInfo as LX.Music.MusicInfoOnline
 }
 
-// const initDownloadList = (list: LX.Download.ListItem[]) => {
-//   downloadList.splice(0, downloadList.length, ...list)
-// }
+const normalizeDownloadInfo = (downloadInfo: LX.Download.ListItem) => {
+  markRaw(downloadInfo.metadata)
+  if (downloadInfo.isRemoteSynced) {
+    downloadInfo.status = DOWNLOAD_STATUS.PAUSE
+    downloadInfo.statusText = ''
+    downloadInfo.progress = 0
+    downloadInfo.speed = ''
+    return downloadInfo
+  }
+  switch (downloadInfo.status) {
+    case DOWNLOAD_STATUS.RUN:
+    case DOWNLOAD_STATUS.WAITING:
+      downloadInfo.status = DOWNLOAD_STATUS.PAUSE
+      downloadInfo.statusText = window.i18n.t('download___status_paused')
+    default:
+      break
+  }
+  return downloadInfo
+}
 
 export const getDownloadList = async(): Promise<LX.Download.ListItem[]> => {
   if (!downloadList.length) {
     const list = await downloadTasksGet()
-    for (const downloadInfo of list) {
-      markRaw(downloadInfo.metadata)
-      switch (downloadInfo.status) {
-        case DOWNLOAD_STATUS.RUN:
-        case DOWNLOAD_STATUS.WAITING:
-          downloadInfo.status = DOWNLOAD_STATUS.PAUSE
-          downloadInfo.statusText = window.i18n.t('download___status_paused')
-        default:
-          break
-      }
-    }
+    for (const downloadInfo of list) normalizeDownloadInfo(downloadInfo)
     arrPush(downloadList, list)
   }
   return downloadList
+}
+
+export const registerDownloadListOverwrite = () => {
+  onDownloadListOverwrite(({ params: list }) => {
+    const existingTaskMap = new Map(downloadList.map(task => [task.id, task]))
+    const nextList = list.map(task => {
+      const existingTask = existingTaskMap.get(task.id)
+      if (existingTask && !existingTask.isRemoteSynced) return existingTask
+      return normalizeDownloadInfo(task)
+    })
+    downloadList.splice(0, downloadList.length)
+    arrPush(downloadList, nextList)
+    window.app_event.downloadListUpdate()
+  })
 }
 
 const addTasks = async(list: LX.Download.ListItem[]) => {
@@ -479,6 +500,7 @@ export const createDownloadTasks = async(list: LX.Music.MusicInfoOnline[], quali
  */
 export const startDownloadTasks = async(list: LX.Download.ListItem[]) => {
   for (const downloadInfo of list) {
+    if (downloadInfo.isRemoteSynced) continue
     switch (downloadInfo.status) {
       case DOWNLOAD_STATUS.PAUSE:
       case DOWNLOAD_STATUS.ERROR:
@@ -497,6 +519,7 @@ export const startDownloadTasks = async(list: LX.Download.ListItem[]) => {
  */
 export const pauseDownloadTasks = async(list: LX.Download.ListItem[]) => {
   for (const downloadInfo of list) {
+    if (downloadInfo.isRemoteSynced) continue
     switch (downloadInfo.status) {
       case DOWNLOAD_STATUS.RUN:
         void window.lx.worker.download.pauseTask(downloadInfo.id)

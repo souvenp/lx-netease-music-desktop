@@ -15,6 +15,7 @@ dd
 
 SyncClient(v-if="sync.mode == 'client'")
 SyncServer(v-else)
+WebDAV
 
 </template>
 
@@ -25,12 +26,14 @@ import { openUrl } from '@common/utils/electron'
 import { appSetting, updateSetting } from '@renderer/store/setting'
 import SyncServer from './SyncServer.vue'
 import SyncClient from './SyncClient.vue'
+import WebDAV from './WebDAV.vue'
 
 export default {
   name: 'SettingSync',
   components: {
     SyncServer,
     SyncClient,
+    WebDAV,
   },
   setup() {
     return {

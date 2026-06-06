@@ -215,6 +215,8 @@ tables.set('download_list', `
     "filePath" TEXT NOT NULL,
     "musicInfo" TEXT NOT NULL,
     "position" INTEGER NOT NULL,
+    "createdAt" INTEGER NOT NULL DEFAULT 0,
+    "isRemoteSynced" INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY("id")
   );
 `)
@@ -228,4 +230,4 @@ tables.set('dislike_list', `
 
 export default tables
 
-export const DB_VERSION = '2'
+export const DB_VERSION = '3'

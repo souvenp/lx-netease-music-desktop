@@ -62,3 +62,13 @@ export const clearDownloadList = () => {
   clearStatement.run()
 }
 
+export const overwriteDownloadList = (mInfos: LX.DBService.DownloadMusicInfo[]) => {
+  const db = getDB()
+  const clearStatement = createClearStatement()
+  const insertStatement = createInsertStatement()
+  db.transaction((mInfos: LX.DBService.DownloadMusicInfo[]) => {
+    clearStatement.run()
+    for (const info of mInfos) insertStatement.run(info)
+  })(mInfos)
+}
+

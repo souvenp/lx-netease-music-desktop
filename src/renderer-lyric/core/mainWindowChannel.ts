@@ -109,3 +109,10 @@ export const getAnalyserDataArray = () => {
 export const getStatus = () => {
   sendDesktopLyricInfo('get_status')
 }
+
+export const setVolumeDelta = (delta: number) => {
+  sendDesktopLyricInfo({
+    action: 'set_volume_delta',
+    data: delta,
+  })
+}

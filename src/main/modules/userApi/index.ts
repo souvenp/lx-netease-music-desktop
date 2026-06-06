@@ -1,10 +1,19 @@
 import { closeWindow } from './main'
-import { getUserApis, importApi as handleImportApi, removeApi as handleRemoveApi, setAllowShowUpdateAlert as saveAllowShowUpdateAlert } from './utils'
+import {
+  getUserApis,
+  getUserApisForSync,
+  importApi as handleImportApi,
+  overwriteUserApisForSync,
+  removeApi as handleRemoveApi,
+  setAllowShowUpdateAlert as saveAllowShowUpdateAlert,
+} from './utils'
 import { loadApi, setAllowShowUpdateAlert as setRendererEventAllowShowUpdateAlert, init } from './rendererEvent/rendererEvent'
 
 let userApiId: string | null
 
 export const getApiList = getUserApis
+export const getApiDataForSync = getUserApisForSync
+export const overwriteApiDataForSync = overwriteUserApisForSync
 
 export const importApi = async(script: string): Promise<LX.UserApi.ImportUserApi> => {
   return {

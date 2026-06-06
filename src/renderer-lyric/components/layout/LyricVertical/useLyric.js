@@ -69,6 +69,7 @@ export default (isComputeWidth) => {
   }
 
   const handleLyricDown = (target, x, y) => {
+    if (setting['desktopLyric.isLock']) return
     if (target.classList.contains('font-lrc') ||
         target.parentNode.classList.contains('font-lrc') ||
         target.classList.contains('extended') ||

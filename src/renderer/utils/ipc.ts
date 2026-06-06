@@ -792,8 +792,8 @@ export const onSyncAction = (listener: LX.IpcRendererEventListenerParams<LX.Sync
  * @param action
  * @returns
  */
-export const sendSyncAction = async(action: LX.Sync.SyncServiceActions) => {
-  return rendererInvoke<LX.Sync.SyncServiceActions>(WIN_MAIN_RENDERER_EVENT_NAME.sync_action, action)
+export const sendSyncAction = async<T = void>(action: LX.Sync.SyncServiceActions): Promise<T> => {
+  return rendererInvoke<LX.Sync.SyncServiceActions, T>(WIN_MAIN_RENDERER_EVENT_NAME.sync_action, action)
 }
 
 /**
@@ -855,4 +855,10 @@ export const downloadTasksRemove = async(ids: string[]) => {
 }
 export const downloadListClear = async() => {
   return rendererInvoke(WIN_MAIN_RENDERER_EVENT_NAME.download_list_clear)
+}
+export const onDownloadListOverwrite = (listener: LX.IpcRendererEventListenerParams<LX.Download.ListItem[]>): RemoveListener => {
+  rendererOn(WIN_MAIN_RENDERER_EVENT_NAME.download_list_overwrite, listener)
+  return () => {
+    rendererOff(WIN_MAIN_RENDERER_EVENT_NAME.download_list_overwrite, listener)
+  }
 }

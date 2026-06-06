@@ -693,6 +693,14 @@ declare global {
        */
       'sync.client.host': string
 
+      'sync.webdav.enable': boolean
+      'sync.webdav.syncLists': boolean
+      'sync.webdav.url': string
+      'sync.webdav.username': string
+      'sync.webdav.password': string
+      'sync.webdav.path': string
+      'sync.webdav.lastSyncTimeLists': number
+
 
       /**
        * 是否启用开放API服务

@@ -33,19 +33,21 @@ export default ({ list, selectedList, removeAllSelect }) => {
 
   const handleStartTask = async(index, single) => {
     if (selectedList.value.length && !single) {
-      startDownloadTasks([...selectedList.value])
+      startDownloadTasks(selectedList.value.filter(task => !task.isRemoteSynced))
       removeAllSelect()
     } else {
-      startDownloadTasks([list.value[index]])
+      const task = list.value[index]
+      if (!task.isRemoteSynced) startDownloadTasks([task])
     }
   }
 
   const handlePauseTask = async(index, single) => {
     if (selectedList.value.length && !single) {
-      pauseDownloadTasks([...selectedList.value])
+      pauseDownloadTasks(selectedList.value.filter(task => !task.isRemoteSynced))
       removeAllSelect()
     } else {
-      pauseDownloadTasks([list.value[index]])
+      const task = list.value[index]
+      if (!task.isRemoteSynced) pauseDownloadTasks([task])
     }
   }
 

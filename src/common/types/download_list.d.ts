@@ -52,6 +52,8 @@ declare global {
         progress: number
         speed: string
         writeQueue: number
+        createdAt?: number
+        isRemoteSynced?: boolean
         metadata: {
           musicInfo: LX.Music.MusicInfoOnline
           url: string | null

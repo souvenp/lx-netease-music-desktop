@@ -72,6 +72,8 @@ declare namespace LX {
       filePath: string
       musicInfo: string
       position: number
+      createdAt: number
+      isRemoteSynced: 0 | 1
     }
 
     interface DislikeInfo {
