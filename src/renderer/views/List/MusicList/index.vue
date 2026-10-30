@@ -285,6 +285,8 @@ export default {
     }
     const handleListItemRightClick = (event, index) => {
       rightClickSelectedIndex.value = index
+      // 右键未选中的歌曲时先清空多选，避免右键菜单动作作用到其它歌曲
+      if (!selectedList.value.includes(list.value[index])) removeAllSelect()
       showMenu(event, list.value[index], index)
     }
     const handleMenuClick = (action) => {

@@ -5,6 +5,7 @@
     <div id="right">
       <layout-toolbar id="toolbar" />
       <layout-view id="view" />
+      <play-progress-strip v-if="appSetting['common.playBarProgressStyle'] !== 'full'" />
       <layout-play-bar id="player" />
     </div>
     <layout-icons />
@@ -24,6 +25,7 @@ import { computed, onMounted } from '@common/utils/vueTools'
 import useApp from '@renderer/core/useApp'
 import { appSetting } from '@renderer/store/setting'
 import { musicInfo } from '@renderer/store/player/state'
+import PlayProgressStrip from '@renderer/components/layout/PlayBar/ProgressStrip.vue'
 
 useApp()
 

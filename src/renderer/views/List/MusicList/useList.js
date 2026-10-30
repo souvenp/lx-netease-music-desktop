@@ -63,40 +63,47 @@ export default ({ listRef, list }) => {
   const keyEvent = useKeyEvent({ listRef, handleSelectAllData })
 
   const handleSelectData = clickIndex => {
+    const item = list.value[clickIndex]
+    if (item == null) return
+
     if (keyEvent.isShiftDown) {
-      if (selectedList.value.length) {
-        removeAllSelect()
-        if (lastSelectIndex != clickIndex) {
-          let _lastSelectIndex = lastSelectIndex
-          let isNeedReverse = false
-          if (clickIndex < _lastSelectIndex) {
-            let temp = _lastSelectIndex
-            _lastSelectIndex = clickIndex
-            clickIndex = temp
-            isNeedReverse = true
-          }
-          selectedList.value = list.value.slice(_lastSelectIndex, clickIndex + 1)
-          if (isNeedReverse) selectedList.value.reverse()
-        }
-      } else {
-        selectedList.value.push(list.value[clickIndex])
+      // Shift + 点击：以上一次单击的歌曲为锚点做区间多选
+      if (lastSelectIndex < 0 || lastSelectIndex >= list.value.length) {
+        selectedList.value = [item]
         lastSelectIndex = clickIndex
+        return
       }
+      let startIndex = lastSelectIndex
+      let endIndex = clickIndex
+      let isNeedReverse = false
+      if (endIndex < startIndex) {
+        const temp = startIndex
+        startIndex = endIndex
+        endIndex = temp
+        isNeedReverse = true
+      }
+      selectedList.value = list.value.slice(startIndex, endIndex + 1)
+      if (isNeedReverse) selectedList.value.reverse()
     } else if (keyEvent.isModDown) {
+      // Ctrl / Cmd + 点击：切换单曲的选中状态
       lastSelectIndex = clickIndex
-      let item = list.value[clickIndex]
       let index = selectedList.value.indexOf(item)
       if (index < 0) {
         selectedList.value.push(item)
       } else {
         selectedList.value.splice(index, 1)
       }
-    } else if (selectedList.value.length) {
-      removeAllSelect()
+    } else {
+      // 普通单击：选中该歌曲，并作为后续 Shift 多选的锚点
+      selectedList.value = [item]
+      lastSelectIndex = clickIndex
     }
   }
 
-  watch(list, removeAllSelect)
+  watch(list, () => {
+    removeAllSelect()
+    lastSelectIndex = -1
+  })
 
   return {
     selectedList,

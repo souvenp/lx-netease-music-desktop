@@ -71,40 +71,47 @@ export default ({ props, listRef }: {
   const keyEvent = useKeyEvent({ handleSelectAllData, listRef })
 
   const handleSelectData = (clickIndex: number) => {
+    const item = props.list[clickIndex]
+    if (item == null) return
+
     if (keyEvent.isShiftDown) {
-      if (selectedList.value.length) {
-        removeAllSelect()
-        if (lastSelectIndex != clickIndex) {
-          let isNeedReverse = false
-          let _lastSelectIndex = lastSelectIndex
-          if (clickIndex < _lastSelectIndex) {
-            let temp = _lastSelectIndex
-            _lastSelectIndex = clickIndex
-            clickIndex = temp
-            isNeedReverse = true
-          }
-          selectedList.value = props.list.slice(_lastSelectIndex, clickIndex + 1)
-          if (isNeedReverse) selectedList.value.reverse()
-        }
-      } else {
-        selectedList.value.push(props.list[clickIndex])
+      // Shift + 点击：以上一次单击的歌曲为锚点做区间多选
+      if (lastSelectIndex < 0 || lastSelectIndex >= props.list.length) {
+        selectedList.value = [item]
         lastSelectIndex = clickIndex
+        return
       }
+      let startIndex = lastSelectIndex
+      let endIndex = clickIndex
+      let isNeedReverse = false
+      if (endIndex < startIndex) {
+        const temp = startIndex
+        startIndex = endIndex
+        endIndex = temp
+        isNeedReverse = true
+      }
+      selectedList.value = props.list.slice(startIndex, endIndex + 1)
+      if (isNeedReverse) selectedList.value.reverse()
     } else if (keyEvent.isModDown) {
+      // Ctrl / Cmd + 点击：切换单曲的选中状态
       lastSelectIndex = clickIndex
-      let item = props.list[clickIndex]
-      let index = selectedList.value.indexOf(item)
+      const index = selectedList.value.indexOf(item)
       if (index < 0) {
         selectedList.value.push(item)
       } else {
         selectedList.value.splice(index, 1)
       }
-    } else if (selectedList.value.length) {
-      removeAllSelect()
+    } else {
+      // 普通单击：选中该歌曲，并作为后续 Shift 多选的锚点
+      selectedList.value = [item]
+      lastSelectIndex = clickIndex
     }
   }
 
-  watch(() => props.list, removeAllSelect)
+  watch(() => props.list, () => {
+    removeAllSelect()
+    lastSelectIndex = -1
+  })
 
   return {
     selectedList,
